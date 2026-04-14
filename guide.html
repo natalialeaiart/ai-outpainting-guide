@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Outpainting Guide</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --navy: #1B2A4A;
+      --burgundy: #8A3B46;
+      --cream: #F7F5F2;
+      --charcoal: #2A2A2A;
+      --soft-gray: #E8E6E3;
+      --gold: #C5A065;
+      --white: #FFFFFF;
+    }
+    * { box-sizing: border-box; }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--cream);
+      color: var(--charcoal);
+      margin: 0;
+      padding: 40px 20px;
+      line-height: 1.65;
+      -webkit-font-smoothing: antialiased;
+    }
+    .container {
+      max-width: 820px;
+      margin: 0 auto;
+      background: var(--white);
+      padding: 60px 50px;
+      box-shadow: 0 12px 45px rgba(27, 42, 74, 0.08);
+      border-radius: 2px;
+    }
+    header { text-align: center; margin-bottom: 45px; }
+    .tag {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.75rem;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--gold);
+      font-weight: 600;
+      margin-bottom: 12px;
+    }
+    h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: 2.6rem;
+      color: var(--navy);
+      margin: 0 0 10px;
+      font-weight: 600;
+      letter-spacing: -0.5px;
+    }
+    .subtitle {
+      font-size: 1rem;
+      color: var(--burgundy);
+      font-style: italic;
+      font-family: 'Playfair Display', serif;
+    }
+    h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.5rem;
+      color: var(--navy);
+      margin: 35px 0 15px;
+      padding-bottom: 8px;
+      border-bottom: 2px solid var(--soft-gray);
+    }
+    .copy-block {
+      background: #FAFAFA;
+      border-left: 4px solid var(--navy);
+      padding: 20px 20px 20px 24px;
+      margin: 15px 0 30px;
+      font-family: 'Courier New', monospace;
+      font-size: 0.88rem;
+      color: var(--charcoal);
+      white-space: pre-wrap;
+      position: relative;
+      border-radius: 0 4px 4px 0;
+      line-height: 1.5;
+    }
+    .copy-btn {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: var(--navy);
+      color: var(--white);
+      border: none;
+      padding: 6px 10px;
+      font-size: 0.7rem;
+      font-family: 'Inter', sans-serif;
+      cursor: pointer;
+      border-radius: 4px;
+      transition: background 0.2s;
+    }
+    .copy-btn:hover { background: var(--burgundy); }
+    .copy-btn.copied { background: var(--gold); }
+    .image-container {
+      text-align: center;
+      margin: 50px 0 30px;
+    }
+    .image-container img {
+      width: 100%;
+      max-width: 100%;
+      border-radius: 4px;
+      box-shadow: 0 6px 24px rgba(27, 42, 74, 0.12);
+    }
+    .image-caption {
+      font-size: 0.8rem;
+      color: #666;
+      margin-top: 10px;
+      font-style: italic;
+    }
+    .social-links {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 16px;
+      margin-top: 45px;
+      padding-top: 25px;
+      border-top: 1px solid var(--soft-gray);
+    }
+    .btn {
+      text-decoration: none;
+      padding: 12px 24px;
+      border-radius: 30px;
+      font-weight: 500;
+      font-size: 0.85rem;
+      transition: all 0.3s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-family: 'Inter', sans-serif;
+    }
+    .btn-ig {
+      background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888);
+      color: white;
+    }
+    .btn-tg { background: #0088cc; color: white; }
+    .btn:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0,0,0,0.15); }
+    .note { font-size: 0.82rem; color: #555; font-style: italic; margin-bottom: 10px; }
+    @media print {
+      body { background: #fff; padding: 0; }
+      .container { box-shadow: none; padding: 20px; max-width: 100%; }
+      .copy-btn { display: none; }
+      .btn { border: 1px solid #ccc; background: #f9f9f9 !important; color: #333 !important; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="tag">FASHION AI GUIDE</div>
+      <h1>Расширение кадра</h1>
+      <div class="subtitle">Мастер-промпт для профессионального outpainting</div>
+    </header>
+
+    <h2>ШАГ 1</h2>
+    <p class="note">Отправьте этот текст первым сообщением в любую LLM (ChatGPT, Claude, Gemini и т.д.)</p>
+    <div class="copy-block" id="step1">Ты - AI Prompt Engineer, специализирующийся на расширении изображений (outpainting).
+Создай промпт на расширение фото по следующей структуре:
+Параметры:
+- финальный размер: [укажи]
+- расположение оригинала: [укажи]
+- доля оригинала: [укажи]
+- зоны расширения: [укажи]
+Сцена:
+[опиши, что должно появиться за пределами изображения]
+Стиль:
+[например: photorealistic/cinematic/editorial]
+Настроение:
+[например: warm/dramatic/calm]
+Свет:
+[например: daylight/sunset/studio]
+Цвета: [цветовая палитра]
+Дополнительно (если нужно): [ограничения или пожелания]
+Собери итоговый промпт строго по моему шаблону:
+- без лишнего текста
+- без объяснений
+- компактно
+- с грамотной формулировкой сцены (без перегруза)
+Шаблон:
+Use [Image 1] as the base image.
+IMPORTANT:
+The original image must remain unchanged.
+Do not modify the person (face, body, pose, clothing, expression).
+Only extend the image outside its boundaries. Do not reinterpret or redesign the scene - only extend it.
+Canvas expansion:
+- final ratio: [ratio]
+- original placement: [placement]
+- original occupies: [coverage]
+- expand: [zones]
+Scene (ONLY outside original image): [scene_description]
+Lighting: [lighting]
+Colors: [color_palette]
+Mood: [mood]
+Rules:
+- Continue existing objects naturally from edges
+- Keep perspective and scale consistent
+- No seams or visible transitions
+- No new people (if needed: remove or adjust)
+- No stylization or surreal elements (if realism required)
+Style: [style], [camera], high detail
+editorial, soft controlled lighting, balanced composition, refined color palette, clean aesthetic, natural textures,
+magazine-quality, subtle depth, no visual clutter
+Готов к заданию?</div>
+    <button class="copy-btn" onclick="copyBlock('step1', this)">📋 Копировать</button>
+
+    <h2>ШАГ 2</h2>
+    <p class="note">Следующим сообщением отправьте своё фото и идею по расширению.</p>
+    <p><strong>Пример запроса и результат:</strong></p>
+    <div class="copy-block" id="step2">финальный размер: 16:9
+оригинал: слева
+расширение: справа
+сцена: уютная комната, синий плюшевый диван, фикус,
+бордовый плед
+стиль: editorial, реализм
+настроение: спокойствие
+Оригинальное фото остается неприкосновенным. Обычно я запускаю сразу 4 генерации и 1-2 всегда дают хороший результат.</div>
+    <button class="copy-btn" onclick="copyBlock('step2', this)">📋 Копировать</button>
+
+    <div class="image-container">
+      <!-- Замените путь ниже на ваше изображение -->
+      <img src="your_image.jpg" alt="AI Outpainting Examples">
+      <div class="image-caption">Референс: гармония текстур, света и композиции</div>
+    </div>
+
+    <div class="social-links">
+      <a href="https://instagram.com/nataliale_aiart" class="btn btn-ig" target="_blank">📷 Instagram @nataliale_aiart</a>
+      <a href="https://t.me/AI_Test_Tube" class="btn btn-tg" target="_blank">✈️ Telegram @AI_Test_Tube</a>
+    </div>
+  </div>
+
+  <script>
+    function copyBlock(id, btn) {
+      const text = document.getElementById(id).innerText;
+      navigator.clipboard.writeText(text).then(() => {
+        const original = btn.innerText;
+        btn.innerText = '✅ Скопировано';
+        btn.classList.add('copied');
+        setTimeout(() => {
+          btn.innerText = original;
+          btn.classList.remove('copied');
+        }, 2000);
+      });
+    }
+  </script>
+</body>
+</html>
