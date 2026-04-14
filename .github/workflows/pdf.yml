@@ -19,34 +19,51 @@ jobs:
         with:
           node-version: '20'
       
-      - name: Install dependencies
-        run: |
-          npm install puppeteer
+      - name: Install Puppeteer
+        run: npm install puppeteer
       
-      - name: Generate PDF
+      - name: Create PDF script
         run: |
-          node -e "
-            const puppeteer = require('puppeteer');
-            const fs = require('fs');
-            const path = require('path');
-            
-            (async () => {
-              const html = fs.readFileSync('./guide.html', 'utf8');
-              const browser = await puppeteer.launch();
+          cat > generate-pdf.js << 'EOF'
+          const puppeteer = require('puppeteer');
+          const fs = require('fs');
+          
+          async function generatePDF() {
+            try {
+              const html = fs.readFileSync('./index.html', 'utf8');
+              const browser = await puppeteer.launch({
+                args: ['--no-sandbox', '--disable-setuid-sandbox']
+              });
               const page = await browser.newPage();
               await page.setContent(html, { waitUntil: 'networkidle0' });
               await page.pdf({
                 path: 'AI-Outpainting-Guide.pdf',
                 format: 'A4',
                 printBackground: true,
-                margin: { top: '20px', right: '20px', bottom: '20px', left: '20px' }
+                margin: {
+                  top: '20px',
+                  right: '20px',
+                  bottom: '20px',
+                  left: '20px'
+                }
               });
               await browser.close();
-            })();
-          "
+              console.log('PDF generated successfully!');
+            } catch (error) {
+              console.error('Error:', error);
+              process.exit(1);
+            }
+          }
+          
+          generatePDF();
+          EOF
+      
+      - name: Generate PDF
+        run: node generate-pdf.js
       
       - name: Upload PDF
         uses: actions/upload-artifact@v4
         with:
           name: AI-Outpainting-Guide
           path: AI-Outpainting-Guide.pdf
+          retention-days: 30
